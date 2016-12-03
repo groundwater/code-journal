@@ -31,6 +31,65 @@ Mach-O is a file format structured as follows
   Segment __LINKEDIT: 0x1000 (vmaddr 0x100001000 fileoff 4096)
   total 0x100002000
   ```
+## Log
+
+- It looks like when compiling an object, you indicate the type of visibility you want with `-fvisibility=XX`.
+  
+  - Dump an individual object build with `-fvisibility=hidden` with `gobjdump`
+  
+    ```
+    bash-4.4$ gobjdump -x build/1.o
+
+    build/1.o:     file format mach-o-x86-64
+    build/1.o
+    architecture: i386:x86-64, flags 0x00000011:
+    HAS_RELOC, HAS_SYMS
+    start address 0x0000000000000000
+
+    Sections:
+    Idx Name          Size      VMA               LMA               File off  Algn
+      0 .text         00000031  0000000000000000  0000000000000000  000001d0  2**4
+                      CONTENTS, ALLOC, LOAD, CODE
+      1 __LD.__compact_unwind 00000040  0000000000000038  0000000000000038  00000208  2**3
+                      CONTENTS, RELOC, DEBUGGING
+      2 .eh_frame     00000068  0000000000000078  0000000000000078  00000248  2**3
+                      CONTENTS, ALLOC, LOAD, READONLY, DATA
+    SYMBOL TABLE:
+    0000000000000000 g       1f SECT   01 0000 [.text] __Z6addOnei
+    0000000000000020 g       1f SECT   01 0000 [.text] __Z6addTwoi
+
+
+    RELOCATION RECORDS FOR [__LD.__compact_unwind]:
+    OFFSET           TYPE              VALUE
+    0000000000000020 64                .text
+    0000000000000000 64                .text
+    ```
+  - Dump a shared library build with objects using `-fvisibility=hidden`
+  
+    ```
+    bash-4.4$ gobjdump -x libadd.so
+
+    libadd.so:     file format mach-o-x86-64
+    libadd.so
+    architecture: i386:x86-64, flags 0x00000050:
+    HAS_SYMS, DYNAMIC
+    start address 0x0000000000000000
+
+    Sections:
+    Idx Name          Size      VMA               LMA               File off  Algn
+      0 .text         0000006d  0000000000000f40  0000000000000f40  00000f40  2**4
+                      CONTENTS, ALLOC, LOAD, CODE
+      1 __TEXT.__unwind_info 00000048  0000000000000fb0  0000000000000fb0  00000fb0  2**2
+                      CONTENTS, ALLOC, LOAD, READONLY, CODE
+    SYMBOL TABLE:
+    0000000000000f40 g       1e SECT   01 0000 [.text] __Z6addOnei
+    0000000000000f60 g       1e SECT   01 0000 [.text] __Z6addTwoi
+    0000000000000f80 g       1e SECT   01 0000 [.text] __Z8timesTwoi
+    0000000000000fa0 g       1e SECT   01 0000 [.text] __Z10timesThreei
+    0000000000000000 g       01 UND    00 0200 dyld_stub_binder
+    ```
+
+
 
 ## Links
 
