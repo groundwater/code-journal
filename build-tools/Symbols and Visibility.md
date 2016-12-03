@@ -88,8 +88,37 @@ Mach-O is a file format structured as follows
     0000000000000fa0 g       1e SECT   01 0000 [.text] __Z10timesThreei
     0000000000000000 g       01 UND    00 0200 dyld_stub_binder
     ```
+- Dump with `objdump` on hidden symbols
+  
+  ```
+  bash-4.4$ objdump -t libadd.so
 
+  libadd.so:      file format Mach-O 64-bit x86-64
 
+  SYMBOL TABLE:
+  0000000000000f40 l     F __TEXT,__text  __Z6addOnei
+  0000000000000f60 l     F __TEXT,__text  __Z6addTwoi
+  0000000000000f80 l     F __TEXT,__text  __Z8timesTwoi
+  0000000000000fa0 l     F __TEXT,__text  __Z10timesThreei
+  0000000000000000         *UND*  dyld_stub_binder
+  ```
+- Same lib dumped with `nm -g` (for global/exported symbols).
+  
+  ```
+  bash-4.4$ nm -g libadd.so
+                 U dyld_stub_binder
+  ```
+  
+  Without `-g` we see all the expected symbols
+  
+  ```
+  bash-4.4$ nm libadd.so
+  0000000000000fa0 t __Z10timesThreei
+  0000000000000f40 t __Z6addOnei
+  0000000000000f60 t __Z6addTwoi
+  0000000000000f80 t __Z8timesTwoi
+                   U dyld_stub_binder
+  ```
 
 ## Links
 
