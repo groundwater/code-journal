@@ -119,6 +119,46 @@ Mach-O is a file format structured as follows
   0000000000000f80 t __Z8timesTwoi
                    U dyld_stub_binder
   ```
+- Using `lldb`
+  
+  ```
+  bash-4.4$ lldb
+  (lldb) target create --no-dependents libadd.so
+  Current executable set to 'libadd.so' (x86_64).
+  (lldb) image dump symtab
+  Dumping symbol table for 1 modules.
+  Symtab, file = /Users/jacob/src/github.com/groundwater/learn-linkers/visibility/libadd.so, num_symbols = 5:
+                 Debug symbol
+                 |Synthetic symbol
+                 ||Externally Visible
+                 |||
+  Index   UserID DSX Type            File Address/Value Load Address       Size               Flags      Name
+  ------- ------ --- --------------- ------------------ ------------------ ------------------ ---------- ----------------------------------
+  [    0]      0     Code            0x0000000000000f40                    0x0000000000000020 0x001e0000 addOne(int)
+  [    1]      1     Code            0x0000000000000f60                    0x0000000000000020 0x001e0000 addTwo(int)
+  [    2]      2     Code            0x0000000000000f80                    0x0000000000000020 0x001e0000 timesTwo(int)
+  [    3]      3     Code            0x0000000000000fa0                    0x000000000000000d 0x001e0000 timesThree(int)
+  [    4]      4   X Undefined       0x0000000000000000                    0x0000000000000000 0x00010200 dyld_stub_binder
+  ```
+- Same command, but on a library build without hidden symbols
+  
+  ```
+  bash-4.4$ lldb
+  (lldb) target create --no-dependents libadd.so                                                                                              Current executable set to 'libadd.so' (x86_64).
+  (lldb) image dump symtab                                                                                                                    Dumping symbol table for 1 modules.
+  Symtab, file = /Users/jacob/src/github.com/groundwater/learn-linkers/visibility/libadd.so, num_symbols = 5:
+                 Debug symbol
+                 |Synthetic symbol
+                 ||Externally Visible
+                 |||
+  Index   UserID DSX Type            File Address/Value Load Address       Size               Flags      Name
+  ------- ------ --- --------------- ------------------ ------------------ ------------------ ---------- ----------------------------------
+  [    0]      0   X Code            0x0000000000000fa0                    0x000000000000000d 0x000f0000 timesThree(int)
+  [    1]      1   X Code            0x0000000000000f40                    0x0000000000000020 0x000f0000 addOne(int)
+  [    2]      2   X Code            0x0000000000000f60                    0x0000000000000020 0x000f0000 addTwo(int)
+  [    3]      3   X Code            0x0000000000000f80                    0x0000000000000020 0x000f0000 timesTwo(int)
+  [    4]      4   X Undefined       0x0000000000000000                    0x0000000000000000 0x00010200 dyld_stub_binder
+  ```
 
 ## Links
 
